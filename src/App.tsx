@@ -1,9 +1,10 @@
 import { Canvas } from "@react-three/fiber";
 import Scatterplot from "./components/Scatterplot";
 import styled from "styled-components";
-import { Suspense } from "react";
+import { Suspense, useCallback, useState } from "react";
 import { useProgress } from "@react-three/drei";
 import Form from "./components/Form";
+import axios from "axios";
 
 const CanvasContainer = styled.div`
   width: 100%;
@@ -16,21 +17,56 @@ const CanvasContainer = styled.div`
   background-size: cover;
 `;
 
+export type PredictionResponse = {
+  field: [number, number, number, number][];
+  kmeans: number;
+  dbscan: number;
+  coordinates: {
+    x: number;
+    y: number;
+    z: number;
+  };
+};
+
 function Loader() {
   const { progress } = useProgress();
   return <div>{progress} % loaded</div>;
 }
 
 function App() {
+  const [isredicting, setIsPredicting] = useState(false);
+  const [prediction, setPrediction] = useState<PredictionResponse | null>(null);
+
+  const getPredictionApiAction = useCallback(async (text: string) => {
+    try {
+      setPrediction(null);
+      setIsPredicting(true);
+      const { data } = await axios.post<PredictionResponse>(
+        "http://localhost:5000",
+        { input_text: text }
+      );
+      setPrediction(data);
+    } catch (error) {
+      alert("Something went wrong");
+      console.error(error);
+    } finally {
+      setIsPredicting(false);
+    }
+  }, []);
+
   return (
     <CanvasContainer>
       <Canvas>
         <Suspense fallback={<Loader />}>
-          <Scatterplot />
+          <Scatterplot prediction={prediction} />
         </Suspense>
       </Canvas>
 
-      <Form />
+      <Form
+        loading={isredicting}
+        prediction={prediction}
+        getPredictionApiAction={getPredictionApiAction}
+      />
     </CanvasContainer>
   );
 }

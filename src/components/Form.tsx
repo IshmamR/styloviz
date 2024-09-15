@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import styled from "styled-components";
+import { PredictionResponse } from "../App";
 
 const DrawerContainer = styled.div`
   position: fixed;
@@ -114,8 +115,64 @@ const NeonButton = styled.button`
   }
 `;
 
-const Form: React.FC = () => {
+const AUTHOR_MAP = {
+  shunil_gongopaddhay: 12,
+  humayun_ahmed: 2,
+  shomresh: 8,
+  shordindu: 9,
+  tarashonkor: 13,
+  shottojit_roy: 11,
+  shirshendu: 7,
+  toslima_nasrin: 14,
+  zahir_rayhan: 15,
+  nihar_ronjon_gupta: 5,
+  robindronath: 6,
+  shorotchandra: 10,
+  manik_bandhopaddhay: 3,
+  nazrul: 4,
+  bongkim: 1,
+  MZI: 0,
+};
+
+const AUTHOR_ARRAY = Object.keys(AUTHOR_MAP).reduce((arr: string[], key) => {
+  arr[AUTHOR_MAP[key as keyof typeof AUTHOR_MAP]] = key;
+  return arr;
+}, []);
+console.log(AUTHOR_ARRAY);
+
+const COLOR_MAP = {
+  12: "#0000FF",
+  2: "#00C850",
+  8: "#00FF00",
+  9: "#00FFFF",
+  13: "#4169E1",
+  11: "#87CEFA",
+  7: "#ADFF2F",
+  14: "#B600C6",
+  15: "#C62E2E",
+  5: "#F863FF",
+  6: "#FD0101",
+  10: "#FF007D",
+  3: "#FF4BCD",
+  4: "#FF7F50",
+  1: "#FFA500",
+  0: "#FFFF00",
+};
+
+type TProps = {
+  prediction: PredictionResponse | null;
+  loading: boolean;
+  getPredictionApiAction: (text: string) => void;
+};
+
+const Form: React.FC<TProps> = ({
+  getPredictionApiAction,
+  prediction,
+  loading,
+}) => {
   const drawerRef = useRef<HTMLDivElement | null>(null);
+
+  const textRef = useRef<HTMLTextAreaElement | null>(null);
 
   const [mode, setMode] = useState<"text" | "file">("text");
 
@@ -128,6 +185,12 @@ const Form: React.FC = () => {
     } else {
       drawerRef.current.classList.add("open");
     }
+  };
+
+  const onClickPredict = () => {
+    if (!textRef.current) return;
+    const value = textRef.current.value;
+    getPredictionApiAction(value);
   };
 
   return (
@@ -145,7 +208,7 @@ const Form: React.FC = () => {
             id="text"
             value="text"
             checked={mode === "text"}
-            onClick={() => setMode("text")}
+            onChange={() => setMode("text")}
           />
           <label htmlFor="text">Text</label>
           <input
@@ -154,7 +217,7 @@ const Form: React.FC = () => {
             id="file"
             value="file"
             checked={mode === "file"}
-            onClick={() => setMode("file")}
+            onChange={() => setMode("file")}
           />
           <label htmlFor="file">PDF</label>
           <br />
@@ -166,7 +229,8 @@ const Form: React.FC = () => {
               <br />
               <textarea
                 id="text_value"
-                style={{ width: "100%", height: "600px" }}
+                style={{ width: "100%", height: "400px" }}
+                ref={textRef}
               ></textarea>
             </>
           ) : (
@@ -176,11 +240,44 @@ const Form: React.FC = () => {
               <input type="file" id="file_input" />
             </>
           )}
-          <br />
 
-          <NeonButton>
+          <NeonButton disabled={loading} onClick={onClickPredict}>
             <span>PREDICT</span>
           </NeonButton>
+          <br />
+          <br />
+          {prediction ? (
+            <>
+              <p>
+                Predicted author (K-Means):
+                <b>{AUTHOR_ARRAY[prediction.kmeans]}</b>
+                <span
+                  style={{
+                    display: "inline-block",
+                    width: 12,
+                    height: 12,
+                    marginLeft: 4,
+                    background:
+                      COLOR_MAP[prediction.kmeans as keyof typeof COLOR_MAP],
+                  }}
+                ></span>
+              </p>
+              <p>
+                Predicted author (DBSCAN):
+                <b>{AUTHOR_ARRAY[prediction.dbscan]}</b>
+                <span
+                  style={{
+                    display: "inline-block",
+                    width: 12,
+                    height: 12,
+                    marginLeft: 4,
+                    background:
+                      COLOR_MAP[prediction.dbscan as keyof typeof COLOR_MAP],
+                  }}
+                ></span>
+              </p>
+            </>
+          ) : null}
         </FormContainer>
       </InnerComponent>
     </DrawerContainer>
