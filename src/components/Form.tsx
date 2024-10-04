@@ -249,8 +249,8 @@ const Form: React.FC<TProps> = ({
           {prediction ? (
             <>
               <p>
-                Predicted author (K-Means):
-                <b>{AUTHOR_ARRAY[prediction.kmeans]}</b>
+                Predicted author:
+                <b>{AUTHOR_ARRAY[prediction.pred]}</b>
                 <span
                   style={{
                     display: "inline-block",
@@ -258,21 +258,7 @@ const Form: React.FC<TProps> = ({
                     height: 12,
                     marginLeft: 4,
                     background:
-                      COLOR_MAP[prediction.kmeans as keyof typeof COLOR_MAP],
-                  }}
-                ></span>
-              </p>
-              <p>
-                Predicted author (DBSCAN):
-                <b>{AUTHOR_ARRAY[prediction.dbscan]}</b>
-                <span
-                  style={{
-                    display: "inline-block",
-                    width: 12,
-                    height: 12,
-                    marginLeft: 4,
-                    background:
-                      COLOR_MAP[prediction.dbscan as keyof typeof COLOR_MAP],
+                      COLOR_MAP[prediction.pred as keyof typeof COLOR_MAP],
                   }}
                 ></span>
               </p>

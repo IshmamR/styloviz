@@ -4,16 +4,11 @@ import {
   Sphere,
   Stars,
 } from "@react-three/drei";
-// import coordsJson from "../coords.json";
 import plotPoints from "../X_pca_tsne_coordinates.json";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import { BloomEffect, KernelSize } from "postprocessing";
 import { PredictionResponse } from "../App";
-
-// const x = coordsJson["X"];
-// const y = coordsJson["Y"];
-// const z = coordsJson["Z"];
 
 const COLOR_MAP = {
   12: "#0000FF",
@@ -60,7 +55,7 @@ const Scatterplot: React.FC<TProps> = ({ prediction }) => {
 
     for (let i = 0; i < totalLength; i++) {
       const { x, y, z, label } = plotPoints[i];
-      const mult = 10;
+      const mult = 5;
       xsum += x * mult;
       ysum += y * mult;
       zsum += z * mult;
@@ -123,52 +118,6 @@ const Scatterplot: React.FC<TProps> = ({ prediction }) => {
     };
   }, [prediction]);
 
-  useEffect(() => {
-    if (prediction) {
-      let xsum = 0,
-        ysum = 0,
-        zsum = 0;
-
-      const field = prediction.field.map(
-        (v) => v.map((n) => n * 10) as [number, number, number, number]
-      );
-      field.shift();
-
-      console.log(field.length);
-
-      const predX = prediction.coordinates.x.toFixed(6);
-      const predY = prediction.coordinates.y.toFixed(6);
-      const predZ = prediction.coordinates.z.toFixed(6);
-      console.log(predX, predY, predZ);
-
-      const pointsToPlot: [number, number, number, number][] = [];
-      for (let i = 0; i < field.length; i++) {
-        const xMatch = field[i][0].toFixed(4) === predX;
-        const yMatch = field[i][1].toFixed(4) === predY;
-        const zMatch = field[i][2].toFixed(4) === predZ;
-
-        const mult = 10;
-        xsum += field[i][0] * mult;
-        ysum += field[i][1] * mult;
-        zsum += field[i][2] * mult;
-        // if (xMatch || yMatch || zMatch) {
-        //   console.log(xMatch, yMatch, zMatch);
-        // }
-        if (xMatch && yMatch && zMatch) {
-          pointsToPlot.push([0, 0, 0, 420]);
-        } else {
-          pointsToPlot.push(field[i]);
-        }
-      }
-
-      setXSum(xsum / field.length);
-      setXSum(ysum / field.length);
-      setXSum(zsum / field.length);
-
-      setCoordinates(pointsToPlot);
-    }
-  }, [prediction]);
-
   const onClickSphere = (position: number[]) => {
     cameraRef.current?.setLookAt(
       position[0] - 20,
@@ -197,8 +146,6 @@ const Scatterplot: React.FC<TProps> = ({ prediction }) => {
     <>
       <OrbitControls />
       <CameraControls ref={cameraRef} />
-      {/* <Grids size={50} /> */}
-      {/* <axesHelper scale={50} /> */}
 
       <group position={[xSum, ySum, zSum]}>
         <Stars radius={400} fade />
@@ -221,17 +168,16 @@ const Scatterplot: React.FC<TProps> = ({ prediction }) => {
         <>
           <Sphere
             position={[
-              prediction.coordinates.x * 10,
-              prediction.coordinates.y * 10,
-              prediction.coordinates.z * 10,
+              prediction.coordinates.x * 5,
+              prediction.coordinates.y * 5,
+              prediction.coordinates.z * 5,
             ]}
             scale={2}
           >
             <meshStandardMaterial
-              emissive={COLOR_MAP[prediction.kmeans as keyof typeof COLOR_MAP]}
+              emissive={COLOR_MAP[prediction.pred as keyof typeof COLOR_MAP]}
               emissiveIntensity={20}
-              // toneMapped={false}
-              color={COLOR_MAP[prediction.kmeans as keyof typeof COLOR_MAP]}
+              color={COLOR_MAP[prediction.pred as keyof typeof COLOR_MAP]}
             />
             <EffectComposer>
               <Bloom

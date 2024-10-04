@@ -19,8 +19,7 @@ const CanvasContainer = styled.div`
 
 export type PredictionResponse = {
   field: [number, number, number, number][];
-  kmeans: number;
-  dbscan: number;
+  pred: number;
   coordinates: {
     x: number;
     y: number;
