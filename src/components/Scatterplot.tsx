@@ -9,28 +9,9 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import { BloomEffect, KernelSize } from "postprocessing";
 import { PredictionResponse } from "../App";
+import { COLOR_MAP } from "../assets/data";
 
-const COLOR_MAP = {
-  12: "#0000FF",
-  2: "#00C850",
-  8: "#00FF00",
-  9: "#00FFFF",
-  13: "#4169E1",
-  11: "#87CEFA",
-  7: "#ADFF2F",
-  14: "#B600C6",
-  15: "#C62E2E",
-  5: "#F863FF",
-  6: "#FD0101",
-  10: "#FF007D",
-  3: "#FF4BCD",
-  4: "#FF7F50",
-  1: "#FFA500",
-  0: "#FFFF00",
-  420: "#000000",
-};
-
-const totalLength = plotPoints.length;
+const MULT = 5;
 
 type TProps = {
   prediction: PredictionResponse | null;
@@ -48,6 +29,7 @@ const Scatterplot: React.FC<TProps> = ({ prediction }) => {
   const [zSum, setZSum] = useState(-1);
 
   useEffect(() => {
+    const totalLength = plotPoints.length;
     let xsum = 0,
       ysum = 0,
       zsum = 0;
@@ -55,11 +37,10 @@ const Scatterplot: React.FC<TProps> = ({ prediction }) => {
 
     for (let i = 0; i < totalLength; i++) {
       const { x, y, z, label } = plotPoints[i];
-      const mult = 5;
-      xsum += x * mult;
-      ysum += y * mult;
-      zsum += z * mult;
-      coords.push([x * mult, y * mult, z * mult, label]);
+      xsum += x * MULT;
+      ysum += y * MULT;
+      zsum += z * MULT;
+      coords.push([x * MULT, y * MULT, z * MULT, label]);
     }
 
     xsum = xsum / totalLength;
@@ -168,9 +149,9 @@ const Scatterplot: React.FC<TProps> = ({ prediction }) => {
         <>
           <Sphere
             position={[
-              prediction.coordinates.x * 5,
-              prediction.coordinates.y * 5,
-              prediction.coordinates.z * 5,
+              prediction.coordinates.x * MULT,
+              prediction.coordinates.y * MULT,
+              prediction.coordinates.z * MULT,
             ]}
             scale={2}
           >

@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import styled from "styled-components";
 import { PredictionResponse } from "../App";
+import { COLOR_MAP } from "../assets/data";
 
 const DrawerContainer = styled.div`
   position: fixed;
@@ -138,26 +139,6 @@ const AUTHOR_ARRAY = Object.keys(AUTHOR_MAP).reduce((arr: string[], key) => {
   arr[AUTHOR_MAP[key as keyof typeof AUTHOR_MAP]] = key;
   return arr;
 }, []);
-console.log(AUTHOR_ARRAY);
-
-const COLOR_MAP = {
-  12: "#0000FF",
-  2: "#00C850",
-  8: "#00FF00",
-  9: "#00FFFF",
-  13: "#4169E1",
-  11: "#87CEFA",
-  7: "#ADFF2F",
-  14: "#B600C6",
-  15: "#C62E2E",
-  5: "#F863FF",
-  6: "#FD0101",
-  10: "#FF007D",
-  3: "#FF4BCD",
-  4: "#FF7F50",
-  1: "#FFA500",
-  0: "#FFFF00",
-};
 
 type TProps = {
   prediction: PredictionResponse | null;
@@ -211,7 +192,7 @@ const Form: React.FC<TProps> = ({
             onChange={() => setMode("text")}
           />
           <label htmlFor="text">Text</label>
-          <input
+          {/* <input
             type="radio"
             name="mode"
             id="file"
@@ -219,7 +200,7 @@ const Form: React.FC<TProps> = ({
             checked={mode === "file"}
             onChange={() => setMode("file")}
           />
-          <label htmlFor="file">PDF</label>
+          <label htmlFor="file">PDF</label> */}
           <br />
           <br />
 
