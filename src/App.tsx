@@ -18,7 +18,6 @@ const CanvasContainer = styled.div`
 `;
 
 export type PredictionResponse = {
-  field: [number, number, number, number][];
   pred: number;
   coordinates: {
     x: number;
@@ -32,6 +31,8 @@ function Loader() {
   return <div>{progress} % loaded</div>;
 }
 
+const SERVER_URL = import.meta.env.VITE_SERVER_URL;
+
 function App() {
   const [isredicting, setIsPredicting] = useState(false);
   const [prediction, setPrediction] = useState<PredictionResponse | null>(null);
@@ -40,10 +41,9 @@ function App() {
     try {
       setPrediction(null);
       setIsPredicting(true);
-      const { data } = await axios.post<PredictionResponse>(
-        "http://localhost:5000",
-        { input_text: text }
-      );
+      const { data } = await axios.post<PredictionResponse>(SERVER_URL, {
+        input_text: text,
+      });
       setPrediction(data);
     } catch (error) {
       alert("Something went wrong");

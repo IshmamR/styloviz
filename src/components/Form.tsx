@@ -249,7 +249,7 @@ const Form: React.FC<TProps> = ({
           {prediction ? (
             <>
               <p>
-                Predicted author:
+                Predicted author:&nbsp;
                 <b>{AUTHOR_ARRAY[prediction.pred]}</b>
                 <span
                   style={{
